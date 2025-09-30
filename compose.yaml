@@ -18,8 +18,7 @@ services:
 
   nats:
     container_name: nats
-    build:
-      context: ./nats
+    image: nats:latest
     env_file:
       - .env
     networks:
@@ -38,18 +37,18 @@ services:
       timeout: 5s
       retries: 3
 
-  worker-tmdb:
-    container_name: worker-tmdb
+  jetstream:
+    container_name: jetstream
     build:
       context: .
     networks:
       - movie
     volumes:
-      - ./tmdb:/app
-    command: ["python", "tmdb.py"]
+      - ./jetstream:/app
+    command: ["python", "jetstream.py"]
     depends_on:
-      - nats
       - postgres
+      - nats
 
   worker-omdb:
     container_name: worker-omdb
@@ -59,36 +58,11 @@ services:
       - movie
     volumes:
       - ./omdb:/app
-    command: ["python", "omdb.py"]
+    command: ["python", "omdb_publisher.py"]
     depends_on:
       - postgres
       - nats
-
-  worker-tvdb:
-    container_name: worker-tvdb
-    build:
-      context: .
-    networks:
-      - movie
-    volumes:
-      - ./tvdb:/app
-    command: ["python", "tvdb.py"]
-    depends_on:
-      - postgres
-      - nats
-
-  worker-imdb:
-    container_name: worker-imdb
-    build:
-      context: .
-    networks:
-      - movie
-    volumes:
-      - ./imdb:/app
-    command: ["python", "imdb.py"]
-    depends_on:
-      - postgres
-      - nats
+      - jetstream
 
   subscriber:
     container_name: subscriber
@@ -100,10 +74,8 @@ services:
       - ./subscriber:/app
     command: ["python", "subscriber.py"]
     depends_on:
-      - worker-imdb
       - worker-omdb
-      - worker-tvdb
-      - worker-tmdb
+      - jetstream
       - nats
 
 networks:

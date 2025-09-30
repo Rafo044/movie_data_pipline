@@ -1,8 +1,8 @@
 typing
-pydantic
-polars
 asyncio
 loguru
 dotenv
-path
-
+asyncpg
+nats-py
+aiohttp
+aiofiles
