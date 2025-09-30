@@ -1,0 +1,111 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:17
+    networks:
+      - movie
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_HOST_PORT}:${POSTGRES_CONTAINER_PORT}"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    container_name: nats
+    build:
+      context: ./nats
+    env_file:
+      - .env
+    networks:
+      - movie
+    ports:
+      - "${NATS_HOST_PORT_1}:${NATS_CONTAINER_PORT_1}"
+      - "${NATS_HOST_PORT_2}:${NATS_CONTAINER_PORT_2}"
+    volumes:
+      - ./nats/jetstream:/jetstream
+      - ./nats/movie_node.conf:/etc/nats/movie_node.conf
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8222/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  worker-tmdb:
+    container_name: worker-tmdb
+    build:
+      context: .
+    networks:
+      - movie
+    volumes:
+      - ./tmdb:/app
+    command: ["python", "tmdb.py"]
+    depends_on:
+      - nats
+      - postgres
+
+  worker-omdb:
+    container_name: worker-omdb
+    build:
+      context: .
+    networks:
+      - movie
+    volumes:
+      - ./omdb:/app
+    command: ["python", "omdb.py"]
+    depends_on:
+      - postgres
+      - nats
+
+  worker-tvdb:
+    container_name: worker-tvdb
+    build:
+      context: .
+    networks:
+      - movie
+    volumes:
+      - ./tvdb:/app
+    command: ["python", "tvdb.py"]
+    depends_on:
+      - postgres
+      - nats
+
+  worker-imdb:
+    container_name: worker-imdb
+    build:
+      context: .
+    networks:
+      - movie
+    volumes:
+      - ./imdb:/app
+    command: ["python", "imdb.py"]
+    depends_on:
+      - postgres
+      - nats
+
+  subscriber:
+    container_name: subscriber
+    build:
+      context: .
+    networks:
+      - movie
+    volumes:
+      - ./subscriber:/app
+    command: ["python", "subscriber.py"]
+    depends_on:
+      - worker-imdb
+      - worker-omdb
+      - worker-tvdb
+      - worker-tmdb
+      - nats
+
+networks:
+  movie:
+    driver: bridge
