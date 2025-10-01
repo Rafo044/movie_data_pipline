@@ -1,6 +1,8 @@
 
+
 # Movie Database
 
+![Movie Database](./image/imdb.png)
 
 https://supervisord.org/
 
@@ -8,6 +10,9 @@ https://supervisord.org/
 
 
 ### OMDb (Open Movie Database)
+
+![Oomdb](./image/omdb.png)
+
 
 Nə verir: film/serial metadata, poster URL-lər; sadə REST API.
 
@@ -23,6 +28,8 @@ Pulsuz hesab açıb data yığmaq olar GDPR qaydalarına uygundur .
 
 
 ### TheTVDB
+![Oomdb](./image/omdb.png)
+
 
 Nə verir: TV-show / episode metadata, artwork; populyar metadata mənbəyi.
 
