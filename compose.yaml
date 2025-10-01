@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${POSTGRES_HOST_PORT}:${POSTGRES_CONTAINER_PORT}"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -24,11 +24,10 @@ services:
     networks:
       - movie
     ports:
-      - "${NATS_HOST_PORT_1}:${NATS_CONTAINER_PORT_1}"
-      - "${NATS_HOST_PORT_2}:${NATS_CONTAINER_PORT_2}"
+      - "${NATS_PORT_1}:4222"
+      - "${NATS_PORT_2}:8222"
     volumes:
       - ./nats/jetstream:/jetstream
-      - ./nats/movie_node.conf:/etc/nats/movie_node.conf
     depends_on:
       - postgres
     healthcheck:
@@ -36,47 +35,7 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-
-  jetstream:
-    container_name: jetstream
-    build:
-      context: .
-    networks:
-      - movie
-    volumes:
-      - ./jetstream:/app
-    command: ["python", "jetstream.py"]
-    depends_on:
-      - postgres
-      - nats
-
-  worker-omdb:
-    container_name: worker-omdb
-    build:
-      context: .
-    networks:
-      - movie
-    volumes:
-      - ./omdb:/app
-    command: ["python", "omdb_publisher.py"]
-    depends_on:
-      - postgres
-      - nats
-      - jetstream
-
-  subscriber:
-    container_name: subscriber
-    build:
-      context: .
-    networks:
-      - movie
-    volumes:
-      - ./subscriber:/app
-    command: ["python", "subscriber.py"]
-    depends_on:
-      - worker-omdb
-      - jetstream
-      - nats
+    command: ["-js", "-m", "8222"]
 
 networks:
   movie:
