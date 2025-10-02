@@ -97,3 +97,9 @@ If you want, you can use this service to start Python files. If not, you can sta
 
 Supervisor service website:
 https://supervisord.org/
+
+# Result
+
+The data remains as ID and JSONB (in the data column).
+
+![Postgres view ](./image/postgres.png)
