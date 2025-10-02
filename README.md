@@ -3,7 +3,11 @@
 
 # Movie Database
 
-This is a simple data pipeline.
+This is a simple movie data pipeline.
+
+In this project, I used the NATS server, which is much lighter than Apache Kafka. Normally, NATS core takes very little space (the deb package is around 10MB). If we want NATS to work stably, meaning it stores messages in queues and delivers them to consumers whenever needed, we should use JetStream.
+JetStream acts as a storage. In this project, I used the file system as JetStream storage, but other storages can also be used (e.g., S3).
+
 
 ![Data Pipeline](./image/pipeline.png)
 
@@ -14,21 +18,24 @@ You must get OMDB and TVDB API keys and put them in the places shown in the .env
 
 ## How to use
 
-#### 1.With this command you create a virtual environment and activate it:
+#### 1.Clone the repo:
+```
+https://github.com/Rafo044/movie_data_pipline.git
+cd movie_data_pipline
+```
+
+#### 2.With this command you create a virtual environment and activate it:
+To activate this, Python and a virtual environment must be installed.
 
 ```
 make venv
 ```
 
-#### 2.To activate use the following commands:
+#### 3.To activate use the following commands:
 ```
 make activate
 ```
-#### 3.Clone the repo:
-```
-https://github.com/Rafo044/movie_data_pipline.git
-cd movie_data_pipline
-```
+
 
 #### 4.Install the dependencies:
 ```
