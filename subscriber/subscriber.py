@@ -43,8 +43,10 @@ async def receiver(
 
 
 async def main():
-    task = receiver(subject_name="tvdb", subscriber_name="TVDB", consumer_name="demo7")
-    await task
+    task1 = receiver(subject_name="omdb", subscriber_name="OMDB", consumer_name="omdb")
+    task2 = receiver(subject_name="tvdb", subscriber_name="TVDB", consumer_name="tvdb")
+
+    await asyncio.gather(task1, task2)
 
 
 asyncio.run(main())
