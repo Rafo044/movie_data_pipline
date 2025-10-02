@@ -102,4 +102,4 @@ https://supervisord.org/
 
 The data remains as ID and JSONB (in the data column).
 
-![Postgres view ](./image/postgres.png)
+![Postgres view ](./image/pgdata.png)
