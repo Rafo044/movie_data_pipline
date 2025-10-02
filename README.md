@@ -1,7 +1,7 @@
 
 
 
-# Movie Database
+# Movie Data Pipeline
 
 This is a simple movie data pipeline.
 
